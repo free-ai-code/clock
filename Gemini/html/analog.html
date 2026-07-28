@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luxury Analog Clock</title>
+  <style>
+    :root {
+      --bg-color: #0b0d12;
+      --clock-size: 380px;
+      --dial-bg: radial-gradient(circle at 30% 30%, #1e232d, #0f1218);
+      --gold-primary: #d4af37;
+      --gold-gradient: linear-gradient(135deg, #f3e5ab 0%, #d4af37 50%, #aa7c11 100%);
+      --silver-gradient: linear-gradient(135deg, #ffffff 0%, #d1d5db 50%, #9ca3af 100%);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: var(--bg-color);
+      font-family: 'Cinzel', 'Times New Roman', serif;
+      overflow: hidden;
+    }
+
+    /* 外枠（金属風ケース） */
+    .clock-case {
+      width: var(--clock-size);
+      height: var(--clock-size);
+      border-radius: 50%;
+      padding: 12px;
+      background: linear-gradient(145deg, #2a2f3a, #101216);
+      box-shadow: 
+        0 20px 50px rgba(0, 0, 0, 0.8),
+        inset 0 2px 3px rgba(255, 255, 255, 0.2),
+        inset 0 -2px 3px rgba(0, 0, 0, 0.8);
+      position: relative;
+    }
+
+    /* ベゼル（立体的なフチ） */
+    .bezel {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      padding: 8px;
+      background: conic-gradient(
+        #3a3f4d, #1a1d24, #5a6175, #1a1d24, #3a3f4d
+      );
+      box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.9);
+    }
+
+    /* ダイヤル（文字盤） */
+    .dial {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: var(--dial-bg);
+      position: relative;
+      box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.8);
+    }
+
+    /* 中央ロゴ風テキスト */
+    .brand {
+      position: absolute;
+      top: 28%;
+      width: 100%;
+      text-align: center;
+      font-size: 0.8rem;
+      letter-spacing: 4px;
+      color: #7a8294;
+      font-weight: 600;
+      text-transform: uppercase;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+    }
+
+    /* 日付窓（デイト表示） */
+    .date-window {
+      position: absolute;
+      right: 20%;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #090a0d;
+      border: 1px solid #3a3f4d;
+      color: var(--gold-primary);
+      padding: 2px 6px;
+      font-size: 0.75rem;
+      font-weight: bold;
+      border-radius: 3px;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.8);
+      font-family: monospace;
+    }
+
+    /* 目盛り */
+    .ticks {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+
+    .tick {
+      position: absolute;
+      width: 2px;
+      height: 10px;
+      background: rgba(255, 255, 255, 0.2);
+      left: 50%;
+      top: 6px;
+      transform-origin: 50% 174px; /* Dial center */
+      margin-left: -1px;
+    }
+
+    .tick.major {
+      width: 3px;
+      height: 16px;
+      background: var(--silver-gradient);
+    }
+
+    /* 数字インデックス */
+    .num {
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      text-align: center;
+      line-height: 30px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #d1d5db;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+    }
+
+    /* 針の共通基盤 */
+    .hand {
+      position: absolute;
+      bottom: 50%;
+      left: 50%;
+      transform-origin: bottom center;
+      border-radius: 4px;
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.6));
+    }
+
+    /* 時針 (Breguet/Sword style) */
+    .hour-hand {
+      width: 8px;
+      height: 28%;
+      margin-left: -4px;
+      background: var(--silver-gradient);
+      clip-path: polygon(30% 0%, 70% 0%, 100% 100%, 0% 100%);
+      z-index: 3;
+    }
+
+    /* 分針 */
+    .minute-hand {
+      width: 6px;
+      height: 40%;
+      margin-left: -3px;
+      background: var(--silver-gradient);
+      clip-path: polygon(30% 0%, 70% 0%, 100% 100%, 0% 100%);
+      z-index: 4;
+    }
+
+    /* 秒針 (ゴールドの極細) */
+    .second-hand {
+      width: 2px;
+      height: 46%;
+      margin-left: -1px;
+      background: var(--gold-gradient);
+      z-index: 5;
+    }
+
+    /* 秒針のカウンターウェイト（後ろの飾り） */
+    .second-hand::after {
+      content: '';
+      position: absolute;
+      bottom: -18px;
+      left: -3px;
+      width: 8px;
+      height: 18px;
+      background: var(--gold-primary);
+      border-radius: 2px;
+    }
+
+    /* 中央のキャップ（軸留め） */
+    .center-cap {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      background: var(--gold-gradient);
+      border-radius: 50%;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.8);
+    }
+
+    /* ガラスの光沢エフェクト */
+    .glass-glare {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: linear-gradient(
+        135deg, 
+        rgba(255, 255, 255, 0.12) 0%, 
+        rgba(255, 255, 255, 0.03) 40%, 
+        transparent 50%
+      );
+      pointer-events: none;
+      z-index: 11;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="clock-case">
+    <div class="bezel">
+      <div class="dial">
+        <div class="glass-glare"></div>
+        <div class="brand">CHRONO</div>
+        <div class="date-window" id="date">00</div>
+
+        <!-- 分・秒目盛り -->
+        <div class="ticks" id="ticks"></div>
+
+        <!-- 1〜12の数字 -->
+        <div id="numbers"></div>
+
+        <!-- 針 -->
+        <div class="hand hour-hand" id="hour"></div>
+        <div class="hand minute-hand" id="minute"></div>
+        <div class="hand second-hand" id="second"></div>
+        <div class="center-cap"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 1. 目盛り（60本）を動的に生成
+    const ticksContainer = document.getElementById('ticks');
+    for (let i = 0; i < 60; i++) {
+      const tick = document.createElement('div');
+      tick.className = i % 5 === 0 ? 'tick major' : 'tick';
+      tick.style.transform = `rotate(${i * 6}deg)`;
+      ticksContainer.appendChild(tick);
+    }
+
+    // 2. 数字（1〜12）の位置合わせ
+    const numbersContainer = document.getElementById('numbers');
+    const radius = 135; // 中心からの距離(px)
+    const centerX = 180 - 15; // 文字盤の中心 - 数字要素の半分の幅
+    const centerY = 180 - 15;
+
+    for (let i = 1; i <= 12; i++) {
+      const num = document.createElement('div');
+      num.className = 'num';
+      num.textContent = i;
+      
+      // 12時を上に配置するための角度計算
+      const angle = (i * 30 - 90) * (Math.PI / 180);
+      const x = centerX + radius * Math.cos(angle);
+      const y = centerY + radius * Math.sin(angle);
+
+      num.style.left = `${x}px`;
+      num.style.top = `${y}px`;
+      numbersContainer.appendChild(num);
+    }
+
+    // 3. 高精度な時計の駆動ロジック
+    function updateClock() {
+      const now = new Date();
+
+      const ms = now.getMilliseconds();
+      const seconds = now.getSeconds() + ms / 1000;
+      const minutes = now.getMinutes() + seconds / 60;
+      const hours = (now.getHours() % 12) + minutes / 60;
+
+      // 角度計算
+      const secondDeg = seconds * 6; // 360 / 60
+      const minuteDeg = minutes * 6;
+      const hourDeg = hours * 30;    // 360 / 12
+
+      // 針に適用
+      document.getElementById('second').style.transform = `translateX(-50%) rotate(${secondDeg}deg)`;
+      document.getElementById('minute').style.transform = `translateX(-50%) rotate(${minuteDeg}deg)`;
+      document.getElementById('hour').style.transform = `translateX(-50%) rotate(${hourDeg}deg)`;
+
+      // 日付の更新
+      document.getElementById('date').textContent = String(now.getDate()).padStart(2, '0');
+
+      // 毎フレーム（約60fps/120fps）呼び出しで極限まで滑らかに可動
+      requestAnimationFrame(updateClock);
+    }
+
+    requestAnimationFrame(updateClock);
+  </script>
+
+</body>
+</html>
