@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>デジタル時計</title>
+  <style>
+    /* 全体のスタイル設定 */
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background-color: #0d1117;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #ffffff;
+    }
+
+    /* 時計の外枠 */
+    .clock-card {
+      background: #161b22;
+      padding: 30px 50px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      border: 1px solid #30363d;
+      text-align: center;
+    }
+
+    /* 日付表示 */
+    .date {
+      font-size: 1.2rem;
+      color: #8b949e;
+      letter-spacing: 2px;
+      margin-bottom: 10px;
+    }
+
+    /* 時間表示 */
+    .time {
+      font-size: 4rem;
+      font-weight: bold;
+      color: #58a6ff;
+      letter-spacing: 4px;
+      text-shadow: 0 0 20px rgba(88, 166, 255, 0.4);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="clock-card">
+    <div class="date" id="date">2026/00/00 (月)</div>
+    <div class="time" id="time">00:00:00</div>
+  </div>
+
+  <script>
+    function updateClock() {
+      const now = new Date();
+
+      // 日付のフォーマット（例: 2026/07/28 (火)）
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const date = String(now.getDate()).padStart(2, '0');
+      const dayNames = ['日', '月', '火', '水', '木', '金', '土'];
+      const day = dayNames[now.getDay()];
+
+      // 時間のフォーマット（例: 18:30:05）
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const seconds = String(now.getSeconds()).padStart(2, '0');
+
+      // 画面に反映
+      document.getElementById('date').textContent = `${year}/${month}/${date} (${day})`;
+      document.getElementById('time').textContent = `${hours}:${minutes}:${seconds}`;
+    }
+
+    // 1秒ごとにupdateClockを実行
+    setInterval(updateClock, 1000);
+
+    // ページ読み込み時に即座に表示させる
+    updateClock();
+  </script>
+
+</body>
+</html>
