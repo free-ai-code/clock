@@ -10,7 +10,9 @@ Geminiの強いモデルです。
 ### **Claude Haiku4.5**
 Claudeの最近のモデルです。
 ### **GPT-5.4 mini**
-ChatGPTの最近できた5.4のminiモデルです
+ChatGPTの最近できた5.4のminiモデルです。
+### **Mistral small 4**
+Mistralの最新4モデルです。
 
 ---
 様々な言語で書いております
